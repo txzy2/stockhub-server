@@ -45,6 +45,7 @@ export class UserService {
       },
       include: {
         orders: true,
+        basket: true,
       },
     })
 
@@ -53,8 +54,15 @@ export class UserService {
     }
 
     let ordersCount = 0
+    let inBasketCount = 0
     if (user.id) {
       ordersCount = await this.prisma.userOrders.count({
+        where: {
+          userId: user.id,
+        },
+      })
+
+      inBasketCount = await this.prisma.userBasket.count({
         where: {
           userId: user.id,
         },
@@ -68,6 +76,7 @@ export class UserService {
       fio: user.fio,
       bonus: user.bonus,
       orders: ordersCount,
+      basket: inBasketCount,
     }
   }
 }
