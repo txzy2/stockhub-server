@@ -1,0 +1,86 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  id       Int    @id @default(autoincrement())
+  chat_id  String @unique
+  username String
+
+  email  String @default("none")
+  fio    String @default("none")
+  locale String @default("none")
+  bonus  Int    @default(0)
+
+  basket UserBasket[]
+  orders UserOrders[]
+}
+
+model UserBasket {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int
+}
+
+model UserOrders {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  id       Int             @id @default(autoincrement())
+  order_id Int
+  status   userOrderStatus
+  count    Int             @default(0)
+
+  product Product[]
+  User    User?     @relation(fields: [userId], references: [id])
+  userId  Int?
+}
+
+model Product {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  id Int @id @default(autoincrement())
+
+  name     String
+  brand    String
+  material String
+  color    String
+  size     String[]
+
+  photos Bytes[]
+
+  orderId      Int?
+  order        UserOrders?  @relation(fields: [userOrdersId], references: [id])
+  userOrdersId Int?
+  UserBasket   UserBasket[]
+}
+
+model staticPhoto {
+  id      Int    @id @default(autoincrement())
+  name    String
+  caption String
+  photo   Bytes
+}
+
+enum userOrderStatus {
+  IN_PROGRESS
+  PAID
+  CANCELLED
+}
