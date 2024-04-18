@@ -7,7 +7,11 @@ import {
   Post,
 } from '@nestjs/common'
 import {PhotoService} from './photo.service'
-import {PushPhotoDto} from 'src/dto/pushPhoto.dto'
+import {
+  ProductRequestDto,
+  ProductResponseDto,
+  PushPhotoDto,
+} from 'src/dto/pushPhoto.dto'
 
 @Controller('photo')
 export class PhotoController {
@@ -18,5 +22,14 @@ export class PhotoController {
   @Post('get')
   async pushphoto(@Body() dto: PushPhotoDto) {
     return this.photoService.pushPhoto(dto)
+  }
+
+  @Post('getProduct')
+  async getPhoto(
+    @Body() shoe: ProductRequestDto,
+  ): Promise<ProductResponseDto[]> {
+    console.log('Received request:', shoe)
+    const products = await this.photoService.pushPhotoByParams(shoe)
+    return products
   }
 }

@@ -64,7 +64,7 @@ model Product {
   color    String
   size     String[]
 
-  photos Bytes[]
+  photos String[]
 
   orderId      Int?
   order        UserOrders?  @relation(fields: [userOrdersId], references: [id])
