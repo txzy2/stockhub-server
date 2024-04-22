@@ -33,7 +33,6 @@ model UserBasket {
   user   User @relation(fields: [userId], references: [id])
   userId Int
 
-  product   Product @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int
 }
@@ -47,29 +46,36 @@ model UserOrders {
   status   userOrderStatus
   count    Int             @default(0)
 
-  product Product[]
-  User    User?     @relation(fields: [userId], references: [id])
-  userId  Int?
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
 }
 
 model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  id Int @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
+  article String @default("none")
 
   name     String
   brand    String
+  model    String @default("none")
   material String
-  color    String
-  size     String[]
 
-  photos String[]
+  photos   String[]
+  variants ProductVariant[]
+}
 
-  orderId      Int?
-  order        UserOrders?  @relation(fields: [userOrdersId], references: [id])
-  userOrdersId Int?
-  UserBasket   UserBasket[]
+model ProductVariant {
+  id Int @id @default(autoincrement())
+
+  productId Int
+  color     String
+  size      String[]
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([productId, color, size])
 }
 
 model staticPhoto {
