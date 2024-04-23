@@ -78,4 +78,19 @@ export class ProductService {
 
     return response
   }
+
+  async pushAll() {
+    const res = await this.prisma.product.findMany({
+      include: {
+        variants: {
+          select: {
+            color: true,
+            size: true,
+          },
+        },
+      },
+    })
+
+    return res
+  }
 }

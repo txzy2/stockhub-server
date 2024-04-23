@@ -23,4 +23,9 @@ export class ProductController {
     const products = await this.productService.pushPhotoByParams(shoe)
     return products
   }
+
+  @Post('getAll')
+  async getAll() {
+    return await this.productService.pushAll()
+  }
 }
