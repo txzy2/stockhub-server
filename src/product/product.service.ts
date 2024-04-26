@@ -1,10 +1,10 @@
-import {Injectable} from '@nestjs/common'
-import {ProductRequestDto, ProductResponseDto} from 'src/dto/pushProduct.dto'
-import {PrismaService} from 'src/prisma.service'
+import { Injectable } from '@nestjs/common'
+import { ProductRequestDto, ProductResponseDto } from 'src/dto/pushProduct.dto'
+import { PrismaService } from 'src/prisma.service'
 
 @Injectable()
 export class ProductService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async pushPhotoByParams(
     dto: ProductRequestDto,
@@ -79,8 +79,9 @@ export class ProductService {
     return response
   }
 
-  async pushAll() {
+  async pushAll(type: string) {
     const res = await this.prisma.product.findMany({
+      where: { type: type },
       include: {
         variants: {
           select: {
