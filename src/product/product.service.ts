@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { ProductRequestDto, ProductResponseDto } from 'src/dto/pushProduct.dto'
+import {
+  ProductRequestDto,
+  ProductResponseDto,
+  getAllDto,
+} from 'src/dto/pushProduct.dto'
 import { PrismaService } from 'src/prisma.service'
 
 @Injectable()
@@ -79,9 +83,9 @@ export class ProductService {
     return response
   }
 
-  async pushAll(type: string) {
+  async pushAll(dto: getAllDto) {
     const res = await this.prisma.product.findMany({
-      where: { type: type },
+      where: { var: dto.var },
       include: {
         variants: {
           select: {

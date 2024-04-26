@@ -17,3 +17,7 @@ export type ProductResponseDto = {
   size: string[]
   photos: string[]
 }
+
+export type getAllDto = {
+  var: string
+}

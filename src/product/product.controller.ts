@@ -7,7 +7,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common'
 import { ProductService } from './product.service'
-import { ProductRequestDto, ProductResponseDto } from 'src/dto/pushProduct.dto'
+import {
+  ProductRequestDto,
+  ProductResponseDto,
+  getAllDto,
+} from 'src/dto/pushProduct.dto'
 
 @Controller('product')
 export class ProductController {
@@ -25,7 +29,7 @@ export class ProductController {
   }
 
   @Post('getAll')
-  async getAll(@Body() type: string) {
-    return await this.productService.pushAll(type)
+  async getAll(@Body() dto: getAllDto) {
+    return await this.productService.pushAll(dto)
   }
 }
