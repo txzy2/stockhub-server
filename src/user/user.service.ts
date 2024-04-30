@@ -1,10 +1,10 @@
-import {BadRequestException, Injectable} from '@nestjs/common'
-import {AddDto} from '../dto/add.dto'
-import {PrismaService} from 'src/prisma.service'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { AddDto } from '../dto/add.dto'
+import { PrismaService } from 'src/prisma.service'
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async addUser(dto: AddDto) {
     const existUser = await this.prisma.user.findUnique({
@@ -13,7 +13,6 @@ export class UserService {
       },
     })
 
-    console.log(existUser)
     if (existUser) throw new BadRequestException('User already exist')
 
     const user = await this.prisma.user.create({

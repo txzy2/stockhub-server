@@ -5,6 +5,7 @@ export type ProductRequestDto = {
   model: string
   color: string[]
   material: string[]
+  price: string
 }
 
 export type ProductResponseDto = {
@@ -15,6 +16,7 @@ export type ProductResponseDto = {
   model: string
   color: string[]
   size: string[]
+  price: string
   photos: string[]
 }
 
