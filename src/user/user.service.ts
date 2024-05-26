@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { AddDto } from '../dto/add.dto'
+import { AddAddressDto, AddDto, AddEmailDto, AddFIODto } from '../dto/add.dto'
 import { PrismaService } from 'src/prisma.service'
 
 @Injectable()
@@ -77,5 +77,62 @@ export class UserService {
       orders: ordersCount,
       basket: inBasketCount,
     }
+  }
+
+  async add_email(dto: AddEmailDto) {
+    const existUser = await this.prisma.user.findUnique({
+      where: {
+        chat_id: dto.chat_id.toString(),
+      },
+    })
+
+    if (!existUser) throw new BadRequestException('User not found')
+
+    return this.prisma.user.update({
+      where: {
+        chat_id: dto.chat_id.toString(),
+      },
+      data: {
+        email: dto.email,
+      },
+    })
+  }
+
+  async add_name(dto: AddFIODto) {
+    const existUser = await this.prisma.user.findUnique({
+      where: {
+        chat_id: dto.chat_id.toString(),
+      },
+    })
+
+    if (!existUser) throw new BadRequestException('User not found')
+
+    return this.prisma.user.update({
+      where: {
+        chat_id: dto.chat_id.toString(),
+      },
+      data: {
+        fio: dto.fio,
+      },
+    })
+  }
+
+  async add_addres(dto: AddAddressDto) {
+    const existUser = await this.prisma.user.findUnique({
+      where: {
+        chat_id: dto.chat_id.toString(),
+      },
+    })
+
+    if (!existUser) throw new BadRequestException('User not found')
+
+    return this.prisma.user.update({
+      where: {
+        chat_id: dto.chat_id.toString(),
+      },
+      data: {
+        locale: dto.adress,
+      },
+    })
   }
 }

@@ -8,12 +8,12 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
-import {UserService} from './user.service'
-import {AddDto} from '../dto/add.dto'
+import { UserService } from './user.service'
+import { AddAddressDto, AddDto, AddEmailDto, AddFIODto } from '../dto/add.dto'
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
@@ -31,5 +31,38 @@ export class UserController {
     }
 
     return this.userService.getUser(dto.chat_id)
+  }
+
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Post('addEmail')
+  async addEmail(@Body() dto: AddEmailDto) {
+    if (!dto.chat_id || !dto.email) {
+      throw new BadRequestException('Не указан chat_id или email')
+    }
+
+    return this.userService.add_email(dto)
+  }
+
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Post('addName')
+  async addFio(@Body() dto: AddFIODto) {
+    if (!dto.chat_id || !dto.fio) {
+      throw new BadRequestException('Не указан chat_id или fio')
+    }
+
+    return this.userService.add_name(dto)
+  }
+
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Post('addAddres')
+  async addAddres(@Body() dto: AddAddressDto) {
+    if (!dto.chat_id || !dto.adress) {
+      throw new BadRequestException('Не указан chat_id или адресс')
+    }
+
+    return this.userService.add_addres(dto)
   }
 }

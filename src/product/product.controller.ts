@@ -10,8 +10,8 @@ import { ProductService } from './product.service'
 import {
   ProductRequestDto,
   ProductResponseDto,
-  getAllDto,
-} from 'src/dto/pushProduct.dto'
+  getAllDto, ProductAddDto,
+} from 'src/dto/pushProduct.dto';
 
 @Controller('product')
 export class ProductController {
@@ -20,16 +20,21 @@ export class ProductController {
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post('get')
-  async getPhoto(
+  async getProduct(
     @Body() shoe: ProductRequestDto,
   ): Promise<ProductResponseDto[]> {
     console.log('Received request:', shoe)
-    const products = await this.productService.pushPhotoByParams(shoe)
+    const products = await this.productService.pushProductByParams(shoe)
     return products
   }
 
   @Post('getAll')
   async getAll(@Body() dto: getAllDto) {
     return await this.productService.pushAll(dto)
+  }
+
+  @Post('add')
+  async addProduct(@Body() dto: ProductAddDto): boolean {
+    const res = await this.productService.addProduct(dto)
   }
 }
