@@ -166,7 +166,7 @@ export class UserService {
 
     await this.prisma.userOrders.update({
       where: {id: addOrder.id},
-      data: {transaction_link: url},
+      data: {transaction_link: url, size: dto.size},
     })
 
     // TODO: Перенести это в обработчик
