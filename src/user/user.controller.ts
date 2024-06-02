@@ -2,18 +2,24 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
   HttpCode,
   Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
-import { UserService } from './user.service'
-import { AddAddressDto, AddDto, AddEmailDto, AddFIODto } from '../dto/add.dto'
+import {UserService} from './user.service'
+import {
+  AddAddressDto,
+  AddDto,
+  AddEmailDto,
+  AddFIODto,
+  AddRequsetOrderDto,
+  AddResponseOrderDto,
+} from '../dto/add.dto'
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
@@ -64,5 +70,13 @@ export class UserController {
     }
 
     return this.userService.add_addres(dto)
+  }
+
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Post('addOrder')
+  async addOrder(@Body() dto: AddRequsetOrderDto) {
+    console.log(dto)
+    return this.userService.addOrder(dto)
   }
 }

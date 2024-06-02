@@ -6,16 +6,17 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
-import { ProductService } from './product.service'
+import {ProductService} from './product.service'
 import {
   ProductRequestDto,
   ProductResponseDto,
-  getAllDto, ProductAddDto,
-} from 'src/dto/pushProduct.dto';
+  getAllDto,
+  ProductAddDto,
+} from 'src/dto/pushProduct.dto'
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) { }
+  constructor(private readonly productService: ProductService) {}
 
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
@@ -33,8 +34,8 @@ export class ProductController {
     return await this.productService.pushAll(dto)
   }
 
-  @Post('add')
-  async addProduct(@Body() dto: ProductAddDto): boolean {
-    const res = await this.productService.addProduct(dto)
-  }
+  // @Post('add')
+  // async addProduct(@Body() dto: ProductAddDto): boolean {
+  //   const res = await this.productService.addProduct(dto)
+  // }
 }

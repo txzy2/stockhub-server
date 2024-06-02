@@ -5,8 +5,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("FOO")
 }
+
+// TODO: Перенести count из UserOrders -> в User и назвать ordersCount
 
 model User {
   createdAt DateTime @default(now())
@@ -20,6 +22,7 @@ model User {
   fio    String @default("none")
   locale String @default("none")
   bonus  Int    @default(0)
+  count  Int    @default(0)
 
   basket UserBasket[]
   orders UserOrders[]
@@ -41,28 +44,33 @@ model UserOrders {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  id       Int             @id @default(autoincrement())
-  order_id Int
-  status   userOrderStatus
-  count    Int             @default(0)
+  id               Int             @id @default(autoincrement())
+  userId           Int
+  status           userOrderStatus
+  article          String          @default("none")
+  size             String          @default("none")
+  transaction_link String          @default("none")
 
-  User   User? @relation(fields: [userId], references: [id])
-  userId Int?
+  User    User    @relation(fields: [userId], references: [id])
+  Product Product @relation(fields: [article], references: [article])
+
+  @@index([article], name: "article_idx")
 }
 
 model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  id       Int              @id @default(autoincrement())
-  article  String           @unique @default("none")
-  var      String           @default("none")
-  name     String
-  brand    String
-  model    String           @default("none")
-  material String
-  photos   String[]
-  variants ProductVariant[]
+  id         Int              @id @default(autoincrement())
+  article    String           @unique @default("none")
+  var        String           @default("none")
+  name       String
+  brand      String
+  model      String           @default("none")
+  material   String
+  photos     String[]
+  variants   ProductVariant[]
+  UserOrders UserOrders[]
 }
 
 model ProductVariant {
