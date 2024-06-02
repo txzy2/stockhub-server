@@ -2,8 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   HttpCode,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
@@ -30,8 +32,9 @@ export class UserController {
 
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
-  @Post('get')
-  async getUser(@Body() dto: AddDto) {
+  @Get('get')
+  async getUser(@Query() dto: AddDto) {
+    console.log(dto)
     if (!dto.chat_id) {
       throw new BadRequestException('Не указан chat_id')
     }

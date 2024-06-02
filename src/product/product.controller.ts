@@ -1,8 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
-  Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
@@ -20,16 +21,15 @@ export class ProductController {
 
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
-  @Post('get')
+  @Get('get')
   async getProduct(
-    @Body() shoe: ProductRequestDto,
+    @Query() shoe: ProductRequestDto,
   ): Promise<ProductResponseDto[]> {
     console.log('Received request:', shoe)
-    const products = await this.productService.pushProductByParams(shoe)
-    return products
+    return await this.productService.pushProductByParams(shoe)
   }
 
-  @Post('getAll')
+  @Get('getAll')
   async getAll(@Body() dto: getAllDto) {
     return await this.productService.pushAll(dto)
   }
