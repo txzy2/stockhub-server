@@ -18,6 +18,9 @@ export class AddDto {
   locale: string
 
   @ApiProperty()
+  count: number
+
+  @ApiProperty()
   bounus: number
 
   @ApiProperty()
@@ -75,5 +78,6 @@ export class AddRequsetOrderDto {
 }
 
 export class AddResponseOrderDto {
+  @ApiProperty()
   transactionLink: string
 }

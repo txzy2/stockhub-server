@@ -14,8 +14,7 @@ import {
   AddEmailDto,
   AddFIODto,
   AddRequsetOrderDto,
-  AddResponseOrderDto,
-} from '../dto/add.dto'
+} from '../dto/user.dto'
 
 @Controller('user')
 export class UserController {
@@ -75,7 +74,7 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post('addOrder')
-  async addOrder(@Body() dto: AddRequsetOrderDto) {
+  async addOrder(@Body() dto: AddRequsetOrderDto): Promise<string> {
     console.log(dto)
     return this.userService.addOrder(dto)
   }

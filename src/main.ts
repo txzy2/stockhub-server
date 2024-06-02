@@ -1,7 +1,7 @@
 import {NestFactory} from '@nestjs/core'
 import {AppModule} from './app.module'
-import * as fs from 'fs'
-import * as https from 'https'
+// import * as fs from 'fs'
+// import * as https from 'https'
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger'
 
 async function bootstrap() {

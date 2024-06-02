@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("FOO")
+  url      = env("DATABASE_URL")
 }
 
 // TODO: Перенести count из UserOrders -> в User и назвать ordersCount
