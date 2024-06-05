@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Post,
@@ -12,24 +13,25 @@ import {
 import {UserService} from './user.service'
 import {
   AddAddressDto,
+  addBasketItemDto,
   AddDto,
   AddEmailDto,
   AddFIODto,
   AddRequsetOrderDto,
+  DelBasketItemDto,
 } from '../dto/user.dto'
 
 @Controller('user')
+@UsePipes(new ValidationPipe())
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post('add')
   async adduser(@Body() dto: AddDto) {
     return this.userService.addUser(dto)
   }
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Get('get')
   async getUser(@Query() dto: AddDto) {
@@ -41,7 +43,6 @@ export class UserController {
     return this.userService.getUser(dto.chat_id)
   }
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post('addEmail')
   async addEmail(@Body() dto: AddEmailDto) {
@@ -52,7 +53,6 @@ export class UserController {
     return this.userService.add_email(dto)
   }
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post('addName')
   async addFio(@Body() dto: AddFIODto) {
@@ -63,7 +63,6 @@ export class UserController {
     return this.userService.add_name(dto)
   }
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post('addAddres')
   async addAddres(@Body() dto: AddAddressDto) {
@@ -74,11 +73,24 @@ export class UserController {
     return this.userService.add_addres(dto)
   }
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post('addOrder')
   async addOrder(@Body() dto: AddRequsetOrderDto): Promise<string> {
     console.log(dto)
     return this.userService.addOrder(dto)
+  }
+
+  @HttpCode(200)
+  @Post('addToBasket')
+  async addToBasket(@Body() dto: addBasketItemDto) {
+    console.log(dto)
+    return this.userService.addItemBasket(dto)
+  }
+
+  @HttpCode(200)
+  @Delete('delItemBasket')
+  async delBasket(@Body() dto: DelBasketItemDto) {
+    console.log(dto)
+    return this.userService.delItemBasket(dto)
   }
 }

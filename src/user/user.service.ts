@@ -1,14 +1,17 @@
 import {BadRequestException, Injectable} from '@nestjs/common'
 import {
   AddAddressDto,
+  addBasketItemDto,
   AddDto,
   AddEmailDto,
   AddFIODto,
   AddRequsetOrderDto,
+  DelBasketItemDto,
 } from '../dto/user.dto'
 import {PrismaService} from 'src/prisma.service'
 import {createHash} from 'crypto'
 import * as process from 'node:process'
+import {tr} from '@faker-js/faker'
 
 @Injectable()
 export class UserService {
@@ -51,7 +54,15 @@ export class UserService {
         chat_id: chat_id,
       },
       include: {
-        basket: true,
+        basket: {
+          include: {
+            Product: {
+              include: {
+                ProductVariant: true,
+              },
+            },
+          },
+        },
       },
     })
 
@@ -59,14 +70,6 @@ export class UserService {
       throw new BadRequestException(`Пользователь с ${chat_id} не найден`)
     }
 
-    let inBasketCount = 0
-    if (user.id) {
-      inBasketCount = await this.prisma.userBasket.count({
-        where: {
-          userId: user.id,
-        },
-      })
-    }
     console.log(user)
 
     return {
@@ -77,7 +80,23 @@ export class UserService {
       fio: user.fio,
       bonus: user.bonus,
       orders: user.count,
-      basket: inBasketCount,
+      basket: user.basket.map(item => ({
+        userId: item.userId,
+        article: item.article,
+        size: item.size,
+        product: {
+          article: item.Product.article,
+          name: item.Product.name,
+          brand: item.Product.brand,
+          model: item.Product.model,
+          material: item.Product.material,
+          photos: item.Product.photos,
+          variants: item.Product.ProductVariant.map(variant => ({
+            color: variant.color,
+            price: variant.price,
+          })),
+        },
+      })),
     }
   }
 
@@ -149,20 +168,22 @@ export class UserService {
     if (!user) throw new BadRequestException('User not found')
 
     const addOrder = await this.prisma.userOrders.create({
-      data: {userId: user.id, article: dto.article, status: 'IN_PROGRESS'},
+      data: {
+        userId: user.id,
+        article: dto.article,
+        size: dto.size,
+        status: 'IN_PROGRESS',
+      },
       select: {id: true},
     })
 
     const gen: string = `${process.env.MNTID}${addOrder.id}${dto.amount}.00RUB${user.email}012345`
     const MNT_SIGNATURE = createHash('md5').update(gen).digest('hex')
 
-    // TODO: Сделать страницу успешной оплаты
-    // &MNT_SUCCESS_URL=${params.mntSuccessUri}&amp;
-
     const url: string =
       `https://www.payanyway.ru/assistant.widget?MNT_ID=${process.env.MNTID}&MNT_AMOUNT=${dto.amount}.00` +
       `&MNT_DESCRIPTION=${dto.transactionTitle}&MNT_SUBSCRIBER_ID=${user.email}&MNT_CURRENCY_CODE=RUB` +
-      `&MNT_SIGNATURE=${MNT_SIGNATURE}&MNT_TRANSACTION_ID=${addOrder.id}`
+      `&MNT_SIGNATURE=${MNT_SIGNATURE}&MNT_TRANSACTION_ID=${addOrder.id}&MNT_SUCCESS_URL=https://stockhub12.ru`
 
     await this.prisma.userOrders.update({
       where: {id: addOrder.id},
@@ -180,5 +201,54 @@ export class UserService {
     // })
 
     return url
+  }
+
+  async addItemBasket(dto: addBasketItemDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        chat_id: dto.userId.toString(),
+      },
+      select: {basket: true},
+    })
+
+    if (!user) throw new BadRequestException('User not found')
+
+    return this.prisma.userBasket.create({
+      data: {
+        userId: dto.userId,
+        size: dto.size,
+        article: dto.article,
+      },
+    })
+  }
+
+  async delItemBasket(dto: DelBasketItemDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        chat_id: dto.chat_id.toString(),
+      },
+      select: {basket: true},
+    })
+
+    if (!user) throw new BadRequestException('User not found')
+
+    const deletedItem = await this.prisma.userBasket.deleteMany({
+      where: {
+        userId: dto.chat_id,
+        article: dto.article,
+      },
+    })
+
+    if (deletedItem.count === 0) {
+      return false
+    }
+    const updatedUser = await this.prisma.user.findUnique({
+      where: {
+        chat_id: dto.chat_id.toString(),
+      },
+      select: {basket: true},
+    })
+
+    return updatedUser.basket
   }
 }

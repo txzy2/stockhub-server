@@ -16,10 +16,10 @@ import {
 } from 'src/dto/pushProduct.dto'
 
 @Controller('product')
+@UsePipes(new ValidationPipe())
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Get('get')
   async getProduct(
@@ -29,11 +29,13 @@ export class ProductController {
     return await this.productService.pushProductByParams(shoe)
   }
 
+  @HttpCode(200)
   @Get('getAll')
   async getAll(@Body() dto: getAllDto) {
     return await this.productService.pushAll(dto)
   }
 
+  // @HttpCode(200)
   // @Post('add')
   // async addProduct(@Body() dto: ProductAddDto): boolean {
   //   const res = await this.productService.addProduct(dto)

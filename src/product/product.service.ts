@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common'
 import {
+  getAllDto,
   ProductRequestDto,
   ProductResponseDto,
-  getAllDto,
 } from 'src/dto/pushProduct.dto'
 import {PrismaService} from 'src/prisma.service'
 
@@ -28,7 +28,7 @@ export class ProductService {
     }
 
     if (dto.size && dto.size.length > 0) {
-      where.variants = {
+      where.ProductVariant = {
         some: {
           size: {
             has: dto.size,
@@ -38,7 +38,7 @@ export class ProductService {
     }
 
     if (dto.price && dto.price.length > 0) {
-      where.variants = {
+      where.ProductVariant = {
         some: {
           price: {
             has: dto.price,
@@ -48,7 +48,7 @@ export class ProductService {
     }
 
     if (dto.color && dto.color.length > 0) {
-      where.variants = {
+      where.ProductVariant = {
         some: {
           color: {
             equals: dto.color,
@@ -71,8 +71,9 @@ export class ProductService {
 
     const products = await this.prisma.product.findMany({
       where,
+
       include: {
-        variants: {
+        ProductVariant: {
           select: {
             color: true,
             price: true,
@@ -82,8 +83,8 @@ export class ProductService {
       },
     })
 
-    const response: ProductResponseDto[] = products
-      .filter(product => product.variants.length > 0)
+    return products
+      .filter(product => product.ProductVariant.length > 0)
       .map(product => ({
         id: product.id,
         name: product.name,
@@ -91,21 +92,19 @@ export class ProductService {
         brand: product.brand,
         material: product.material,
         model: product.model,
-        color: product.variants.map(variant => variant.color),
-        size: product.variants.flatMap(variant => variant.size),
-        price: product.variants.map(variant => variant.price),
+        color: product.ProductVariant.map(variant => variant.color),
+        size: product.ProductVariant.flatMap(variant => variant.size),
+        price: product.ProductVariant.map(variant => variant.price),
         photos: product.photos,
         var: product.var,
       }))
-
-    return response
   }
 
   async pushAll(dto: getAllDto) {
-    const res = await this.prisma.product.findMany({
+    return this.prisma.product.findMany({
       where: {var: dto.var},
       include: {
-        variants: {
+        ProductVariant: {
           select: {
             color: true,
             size: true,
@@ -114,8 +113,6 @@ export class ProductService {
         },
       },
     })
-
-    return res
   }
 
   // async addProduct(dto: ProductAddDto){
