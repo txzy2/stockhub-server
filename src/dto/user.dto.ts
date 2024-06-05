@@ -84,9 +84,11 @@ export class AddResponseOrderDto {
 
 export class DelBasketItemDto {
   @ApiProperty()
-  article: string
+  @IsString()
+  size: string
 
   @ApiProperty()
+  @IsString()
   chat_id: string
 }
 

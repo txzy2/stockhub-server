@@ -235,7 +235,7 @@ export class UserService {
     const deletedItem = await this.prisma.userBasket.deleteMany({
       where: {
         userId: dto.chat_id,
-        article: dto.article,
+        size: dto.size,
       },
     })
 
