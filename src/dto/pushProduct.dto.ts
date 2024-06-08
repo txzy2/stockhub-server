@@ -1,5 +1,13 @@
 import {ApiProperty} from '@nestjs/swagger'
 
+class PriceRange {
+  @ApiProperty()
+  from: string
+
+  @ApiProperty()
+  to: string
+}
+
 export class ProductRequestDto {
   @ApiProperty()
   name: string
@@ -20,7 +28,7 @@ export class ProductRequestDto {
   material: string[]
 
   @ApiProperty()
-  price: string[]
+  priceRange: PriceRange
 
   @ApiProperty()
   var: string

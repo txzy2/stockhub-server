@@ -7,6 +7,7 @@ import {
   HttpCode,
   Post,
   Query,
+  Req,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
@@ -92,5 +93,12 @@ export class UserController {
   async delBasket(@Body() dto: DelBasketItemDto) {
     console.log(dto)
     return this.userService.delItemBasket(dto)
+  }
+
+  @HttpCode(200)
+  @Get('getCallback')
+  async callback(@Query() dto: any) {
+    console.log(dto)
+    return this.userService.getCallback(dto)
   }
 }

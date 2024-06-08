@@ -11,7 +11,7 @@ import {
 import {PrismaService} from 'src/prisma.service'
 import {createHash} from 'crypto'
 import * as process from 'node:process'
-import {tr} from '@faker-js/faker'
+import {DOMParser, XMLSerializer} from 'xmldom'
 
 @Injectable()
 export class UserService {
@@ -190,17 +190,68 @@ export class UserService {
       data: {transaction_link: url, size: dto.size},
     })
 
-    // TODO: Перенести это в обработчик
-    // await this.prisma.user.update({
-    //   where: {chat_id: dto.chat_id},
-    //   data: {
-    //     count: {
-    //       increment: 1,
-    //     },
-    //   },
-    // })
-
     return url
+  }
+
+  async getCallback(dto) {
+    const getData = {
+      mntId: process.env.MNTID,
+      mntTransactionId: dto.MNT_TRANSACTION_ID,
+      email: dto.MNT_SUBSCRIBER_ID,
+      amount: dto.MNT_AMOUNT,
+      signature: dto.MNT_SIGNATURE,
+    }
+
+    const GEN_SIGNATURE = createHash('md5')
+      .update(
+        `${process.env.MNTID}${dto.MNT_TRANSACTION_ID}${dto.MNT_OPERATION_ID}${dto.MNT_AMOUNT}${dto.MNT_CURRENCY_CODE}${dto.MNT_SUBSCRIBER_ID}012345`,
+      )
+      .digest('hex')
+
+    const GEN_XML = createHash('md5')
+      .update(`200${getData.mntId}${getData.mntTransactionId}12345`)
+      .digest('hex')
+
+    if (getData.mntTransactionId === undefined)
+      return 'FAIL. MNT_TRANSACTION_ID IS EMPTY'
+
+    if (getData.signature !== GEN_SIGNATURE) return 'FAIL. BAD SIGNATURE'
+
+    // TODO: поменять статус заказа
+
+    const inventoryPositions = [
+      {
+        name: 'Услуга по поиску, подбору, заказу и доставки товара',
+        price: getData.amount,
+        quantity: '1',
+        vatTag: '1105',
+        po: 'service',
+      },
+    ]
+
+    const xmlString = `<?xml version="1.0" encoding="UTF-8"?> 
+                      <MNT_RESPONSE>
+                        <MNT_ID>${getData.mntId}</MNT_ID>
+                        <MNT_TRANSACTION_ID>${getData.mntTransactionId}</MNT_TRANSACTION_ID>
+                        <MNT_RESULT_CODE>200</MNT_RESULT_CODE>
+                        <MNT_SIGNATURE>${GEN_XML}</MNT_SIGNATURE>
+                        <MNT_ATTRIBUTES>
+                          <ATTRIBUTE> 
+                            <KEY>INVENTORY</KEY>
+                            <VALUE>${JSON.stringify(inventoryPositions)}</VALUE>
+                          </ATTRIBUTE>
+                          <ATTRIBUTE> 
+                            <KEY>CUSTOMER</KEY>
+                            <VALUE>${getData.email}</VALUE>
+                          </ATTRIBUTE>
+                        </MNT_ATTRIBUTES>
+                      </MNT_RESPONSE>`
+
+    const domParser = new DOMParser()
+    const xmlDoc = domParser.parseFromString(xmlString, 'application/xml')
+
+    const xmlSerializer = new XMLSerializer()
+    return xmlSerializer.serializeToString(xmlDoc)
   }
 
   async addItemBasket(dto: addBasketItemDto) {

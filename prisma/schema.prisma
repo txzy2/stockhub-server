@@ -8,7 +8,7 @@ datasource db {
   url      = env("FOO")
 }
 
-// TODO: Перенести count из UserOrders -> в User и назвать ordersCount
+// TODO: Перенести count из UserOrders -> в User и назвать ordersCount (Убрать ordersCounts так как просто можно считать кол-во строк из бд)
 
 model User {
   createdAt DateTime @default(now())

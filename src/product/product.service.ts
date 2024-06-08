@@ -37,11 +37,12 @@ export class ProductService {
       }
     }
 
-    if (dto.price && dto.price.length > 0) {
+    if (dto.priceRange) {
       where.ProductVariant = {
         some: {
           price: {
-            has: dto.price,
+            gte: dto.priceRange.from,
+            lte: dto.priceRange.to,
           },
         },
       }
@@ -82,6 +83,8 @@ export class ProductService {
         },
       },
     })
+
+    console.log(products)
 
     return products
       .filter(product => product.ProductVariant.length > 0)
